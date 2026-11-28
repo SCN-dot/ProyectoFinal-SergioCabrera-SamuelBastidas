@@ -1,17 +1,19 @@
 #include "Mortero.h"
 #include "logica/Constantes.h"
 
-Mortero::Mortero(const QPointF& puntoImpacto, qreal tiempoAviso, short danio)
+Mortero::Mortero(const QPointF& puntoImpacto, qreal tiempoAviso,
+                 short danio, qreal radioExplosion)
     : Proyectil(puntoImpacto.x(), -40.0, 0.0, 0.0, Constantes::GRAVEDAD_BASE, danio, 250.0),
       puntoImpacto(puntoImpacto),
       tiempoAviso(tiempoAviso > 0.0 ? tiempoAviso : 1.5),
       tiempoTranscurrido(0.0),
       enAviso(true),
-      exploto(false) {
+      exploto(false),
+      radioExplosion(radioExplosion > 0.0 ? radioExplosion : 90.0) {
     spriteId = Constantes::SPR_MORTERO;
-    ancho = 28.0;
-    alto = 28.0;
-    // Se posiciona sobre el punto de impacto durante la caída vertical/parabólica
+    ancho = 44.0;
+    alto = 44.0;
+
     posX = puntoImpacto.x() - ancho / 2.0;
     posY = -40.0;
     modeloTrayectoria.setOrigen(posX, posY);
@@ -32,7 +34,6 @@ void Mortero::actualizar(qreal dt) {
         return;
     }
 
-    // Fase de caída parabólica hacia el puntoImpacto
     tiempoVuelo += dt;
     QPointF nuevaPos = modeloTrayectoria.calcularPosicion(tiempoVuelo);
     posX = nuevaPos.x();
@@ -63,4 +64,8 @@ qreal Mortero::getProgresoAviso() const {
     }
     qreal progreso = tiempoTranscurrido / tiempoAviso;
     return (progreso > 1.0) ? 1.0 : progreso;
+}
+
+qreal Mortero::getRadioExplosion() const {
+    return radioExplosion;
 }
