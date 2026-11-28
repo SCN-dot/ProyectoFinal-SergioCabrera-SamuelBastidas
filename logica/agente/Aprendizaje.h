@@ -5,11 +5,6 @@ class Percepcion;
 class MemoriaNivel;
 class Razonamiento;
 
-/**
- * @brief Fase 4 del Agente Inteligente: Aprendizaje.
- * Evalúa si el último disparo acertó o falló, actualiza MemoriaNivel
- * y adapta los parámetros de Razonamiento al superar el umbral de fallos.
- */
 class Aprendizaje {
 private:
     short umbralFallos;
@@ -28,4 +23,4 @@ public:
     short getUmbralFallos() const;
 };
 
-#endif // APRENDIZAJE_H
+#endif
