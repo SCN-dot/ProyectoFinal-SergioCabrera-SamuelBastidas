@@ -15,12 +15,14 @@ Kirby::Kirby(qreal x, qreal y, short saludMaxima)
       tiempoRoca(0.0),
       tiempoGlobo(0.0),
       modoCenital(false),
-      modeloSalto(x, y, 520.0, M_PI / 2.0, Constantes::GRAVEDAD_BASE),
+      modeloSalto(x, y, 385.0, M_PI / 2.0, Constantes::GRAVEDAD_BASE),
       modeloFuerzas(x, y, 10.0, 0.0, 0.0, 0.0, 0.0),
       masaBase(10.0),
       velocidadBase(240.0),
       tiempoSalto(0.0),
       pisoY(Constantes::PISO_NIVEL1),
+      posYAnterior(y),
+      enSuperficie(true),
       tiempoInvulnerable(0.0) {
     if (saludMaxima <= 0) {
         throw std::invalid_argument("La salud máxima de Kirby debe ser mayor que cero.");
@@ -87,18 +89,25 @@ void Kirby::actualizar(qreal dt) {
     modeloFuerzas.setFuerza(0.0, 0.0);
 
     if (!modoCenital) {
+        posYAnterior = posY;
+
         if (estado == ESTADO_SALTANDO) {
+            enSuperficie = false;
             tiempoSalto += dt;
             QPointF posSalto = modeloSalto.calcularPosicion(tiempoSalto);
             posY = posSalto.y();
+            velY = -modeloSalto.getV0() * qSin(modeloSalto.getTheta())
+                   + modeloSalto.getGravedad() * tiempoSalto;
 
             if (posY + alto >= pisoY) {
                 posY = pisoY - alto;
+                velY = 0.0;
                 estado = ESTADO_SUELO;
                 tiempoSalto = 0.0;
+                enSuperficie = true;
             }
         } else if (estado == ESTADO_GLOBO) {
-
+            enSuperficie = false;
             qreal gravedadEfectiva = Constantes::GRAVEDAD_BASE * 0.30;
             velY += gravedadEfectiva * dt;
             if (velY > 110.0) {
@@ -113,20 +122,23 @@ void Kirby::actualizar(qreal dt) {
             if (posY + alto >= pisoY) {
                 posY = pisoY - alto;
                 velY = 0.0;
+                enSuperficie = true;
                 desinflarGlobo();
             }
         } else {
-
             if (posY + alto < pisoY) {
+                enSuperficie = false;
                 velY += Constantes::GRAVEDAD_BASE * dt;
                 posY += velY * dt;
                 if (posY + alto >= pisoY) {
                     posY = pisoY - alto;
                     velY = 0.0;
+                    enSuperficie = true;
                 }
             } else {
                 posY = pisoY - alto;
                 velY = 0.0;
+                enSuperficie = true;
             }
         }
     }
@@ -146,6 +158,56 @@ void Kirby::actualizar(qreal dt) {
     }
 
     actualizarSpritePorEstado();
+}
+
+void Kirby::resolverPlataformas(const QList<const Entidad*>& plataformas) {
+    if (!activa || modoCenital || velY < 0.0) {
+        return;
+    }
+
+    qreal prevBottom = posYAnterior + alto;
+    qreal currBottom = posY + alto;
+    qreal kirbyIzq = posX + 4.0;
+    qreal kirbyDer = posX + ancho - 4.0;
+
+    bool aterrizo = false;
+    qreal mejorSuperficieY = pisoY;
+
+    for (int i = 0; i < plataformas.size(); ++i) {
+        const Entidad* plat = plataformas[i];
+        if (plat == nullptr || !plat->estaActiva()) {
+            continue;
+        }
+
+        qreal platIzq = plat->getPosX();
+        qreal platDer = plat->getPosX() + plat->getAncho();
+        qreal platTop = plat->getPosY();
+
+        bool solapaHorizontal = (kirbyDer > platIzq) && (kirbyIzq < platDer);
+        if (!solapaHorizontal) {
+            continue;
+        }
+
+        if (prevBottom <= platTop + 8.0 && currBottom >= platTop) {
+            if (!aterrizo || platTop < mejorSuperficieY) {
+                mejorSuperficieY = platTop;
+                aterrizo = true;
+            }
+        }
+    }
+
+    if (aterrizo) {
+        posY = mejorSuperficieY - alto;
+        velY = 0.0;
+        enSuperficie = true;
+        if (estado == ESTADO_SALTANDO) {
+            estado = ESTADO_SUELO;
+            tiempoSalto = 0.0;
+        } else if (estado == ESTADO_GLOBO) {
+            desinflarGlobo();
+        }
+        actualizarSpritePorEstado();
+    }
 }
 
 void Kirby::moverHorizontal(qreal direccion, qreal dt) {
@@ -179,11 +241,14 @@ void Kirby::saltar() {
     if (!activa || modoCenital || estado == ESTADO_ROCA) {
         return;
     }
-    if (estado == ESTADO_SUELO) {
+    if (estado == ESTADO_SUELO && enSuperficie) {
         estado = ESTADO_SALTANDO;
+        enSuperficie = false;
         tiempoSalto = 0.0;
+        velY = -385.0;
         modeloSalto.setOrigen(posX, posY);
-        modeloSalto.setParametros(520.0, M_PI / 2.0, Constantes::GRAVEDAD_BASE);
+        modeloSalto.setParametros(385.0, M_PI / 2.0, Constantes::GRAVEDAD_BASE);
+        actualizarSpritePorEstado();
     }
 }
 
@@ -192,9 +257,10 @@ void Kirby::inflarGlobo() {
         return;
     }
     estado = ESTADO_GLOBO;
+    enSuperficie = false;
     tiempoGlobo = 4.5;
     modeloFuerzas.setMasa(masaBase * 0.25);
-    velY = -180.0;
+    velY = -235.0;
 }
 
 void Kirby::desinflarGlobo() {
@@ -211,11 +277,22 @@ void Kirby::absorberAdoquin(Adoquin* adoquin) {
     }
     adoquin->recoger();
     estado = ESTADO_ROCA;
-    tiempoRoca = 8.0;
+    tiempoRoca = 4.5;
     tiempoGlobo = 0.0;
     modeloFuerzas.setMasa(masaBase * 5.0);
-    if (posY + alto < pisoY && !modoCenital) {
+    if (posY + alto < pisoY && !modoCenital && !enSuperficie) {
         velY = 300.0;
+    }
+}
+
+void Kirby::rebotar() {
+    if (modoCenital || !activa) {
+        return;
+    }
+    velY = -280.0;
+    enSuperficie = false;
+    if (estado == ESTADO_SUELO) {
+        estado = ESTADO_SALTANDO;
     }
 }
 
@@ -248,21 +325,35 @@ void Kirby::recibirImpacto(const Proyectil* proyectil) {
         return;
     }
 
-    if (estado != ESTADO_ROCA) {
+    short tipo = proyectil->getTipoProyectil();
+    bool esPesadoRoca = (tipo == PROY_PESADO_ROCA);
+    bool esRapidoLigero = (tipo == PROY_RAPIDO_LIGERO);
+
+    if (estado != ESTADO_ROCA || esPesadoRoca) {
         qreal fuerza = proyectil->getFuerzaImpacto() * proyectil->getDireccionHorizontal();
+        qreal masaEfectiva = esPesadoRoca ? masaBase : modeloFuerzas.getMasa();
         modeloFuerzas.setFuerza(fuerza * 15.0, 0.0);
-        velX += (fuerza / modeloFuerzas.getMasa()) * 4.5;
+        velX += (fuerza / masaEfectiva) * 4.5;
     }
 
-    recibirDanio(proyectil->getDanio());
+    if (esRapidoLigero && estado == ESTADO_GLOBO) {
+        desinflarGlobo();
+        if (velY < 0.0) {
+            velY = 0.0;
+        }
+    }
+
+    recibirDanio(proyectil->getDanio(), esPesadoRoca);
 }
 
-void Kirby::recibirDanio(short cantidad) {
+void Kirby::recibirDanio(short cantidad, bool ignorarMitigacionRoca) {
     if (cantidad <= 0 || tiempoInvulnerable > 0.0 || !activa) {
         return;
     }
 
-    short danioFinal = (estado == ESTADO_ROCA) ? static_cast<short>(cantidad / 2) : cantidad;
+    short danioFinal = (estado == ESTADO_ROCA && !ignorarMitigacionRoca)
+                           ? static_cast<short>(cantidad / 2)
+                           : cantidad;
     salud -= danioFinal;
     if (salud <= 0) {
         salud = 0;
