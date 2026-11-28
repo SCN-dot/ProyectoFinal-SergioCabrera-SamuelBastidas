@@ -6,11 +6,6 @@
 class Percepcion;
 class MemoriaNivel;
 
-/**
- * @brief Fase 2 del Agente Inteligente: Razonamiento.
- * Selecciona el tipo de disparo según heurística y calcula la velocidad inicial v0
- * mediante balística inversa.
- */
 class Razonamiento {
 private:
     short tipoDisparoSeleccionado;
@@ -36,4 +31,4 @@ public:
     bool estaEnModoPreventivo() const;
 };
 
-#endif // RAZONAMIENTO_H
+#endif
