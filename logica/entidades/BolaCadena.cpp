@@ -34,7 +34,6 @@ bool BolaCadena::golpea(const Kirby* k) const {
         return true;
     }
 
-    // Verificación segmental a lo largo de la cadena radial (de centro a bola)
     qreal cx = modeloEspiral.getXc();
     qreal cy = modeloEspiral.getYc();
     qreal bx = posX + ancho / 2.0;

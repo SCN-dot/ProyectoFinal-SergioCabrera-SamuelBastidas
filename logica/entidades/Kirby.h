@@ -4,6 +4,7 @@
 #include "Entidad.h"
 #include "logica/fisica/MovParabolico.h"
 #include "logica/fisica/MovDinamico.h"
+#include <QList>
 
 class Adoquin;
 class Alimento;
@@ -26,19 +27,23 @@ private:
     qreal velocidadBase;
     qreal tiempoSalto;
     qreal pisoY;
+    qreal posYAnterior;
+    bool enSuperficie;
     qreal tiempoInvulnerable;
 
     void actualizarSpritePorEstado();
 
 public:
-    Kirby(qreal x = 140.0, qreal y = 460.0, short saludMaxima = 100);
+    Kirby(qreal x = 140.0, qreal y = 508.0, short saludMaxima = 100);
 
     void actualizar(qreal dt) override;
     void actualizarEstado(qreal dt);
+    void resolverPlataformas(const QList<const Entidad*>& plataformas);
 
     void moverHorizontal(qreal direccion, qreal dt);
     void moverCenital(qreal dx, qreal dy, qreal dt);
     void saltar();
+    void rebotar();
     void inflarGlobo();
     void desinflarGlobo();
 
@@ -46,7 +51,7 @@ public:
     void comer(Alimento* alimento);
     void aplicarViento(const Viento* viento);
     void recibirImpacto(const Proyectil* proyectil);
-    void recibirDanio(short cantidad);
+    void recibirDanio(short cantidad, bool ignorarMitigacionRoca = false);
 
     short getEstado() const;
     short getSalud() const;

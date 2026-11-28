@@ -3,10 +3,6 @@
 
 #include "Entidad.h"
 
-/**
- * @brief Obstáculo escénico que bloquea proyectiles o avanza hacia la puerta.
- * Solo puede ser destruida cuando Kirby está en ESTADO_ROCA.
- */
 class Barricada : public Entidad {
 private:
     short resistencia;
@@ -20,4 +16,4 @@ public:
     short getResistencia() const;
 };
 
-#endif // BARRICADA_H
+#endif

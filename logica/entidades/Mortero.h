@@ -4,10 +4,6 @@
 #include "Proyectil.h"
 #include <QPointF>
 
-/**
- * @brief Proyectil de artillería del Nivel 2 con fase previa de advertencia visual.
- * Permanece en aviso mostrando su sombra en puntoImpacto antes de caer parabólicamente.
- */
 class Mortero : public Proyectil {
 private:
     QPointF puntoImpacto;
@@ -15,9 +11,11 @@ private:
     qreal tiempoTranscurrido;
     bool enAviso;
     bool exploto;
+    qreal radioExplosion;
 
 public:
-    Mortero(const QPointF& puntoImpacto, qreal tiempoAviso = 1.5, short danio = 20);
+    Mortero(const QPointF& puntoImpacto, qreal tiempoAviso = 1.5,
+            short danio = 20, qreal radioExplosion = 90.0);
 
     void actualizar(qreal dt) override;
 
@@ -25,6 +23,7 @@ public:
     bool haExplotado() const;
     QPointF getPuntoImpacto() const;
     qreal getProgresoAviso() const;
+    qreal getRadioExplosion() const;
 };
 
-#endif // MORTERO_H
+#endif

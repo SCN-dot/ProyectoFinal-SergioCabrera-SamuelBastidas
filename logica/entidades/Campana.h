@@ -6,14 +6,13 @@
 
 class Proyectil;
 
-/**
- * @brief Campana monumental de la catedral en el Nivel 1.
- * Oscila horizontalmente con movimiento armónico simple y bloquea proyectiles.
- */
 class Campana : public Entidad {
 private:
     MovArmonico modeloOscilacion;
     qreal tiempoAcumulado;
+    bool suelta;
+    bool cubriendoPuerta;
+    qreal velocidadCaida;
 
 public:
     Campana(qreal xCentro = 180.0, qreal y = 160.0,
@@ -21,8 +20,13 @@ public:
 
     void actualizar(qreal dt) override;
     bool detiene(const Proyectil* p) const;
+    void soltar();
 
     void setPeriodo(qreal periodo);
+
+    bool estaSuelta() const;
+    bool estaCubriendoPuerta() const;
+    qreal getVelocidadCaida() const;
 };
 
-#endif // CAMPANA_H
+#endif
