@@ -16,13 +16,10 @@ Proyectil* AgenteAutonomo::ejecutarCiclo(Kirby* k, Entidad* host, MemoriaNivel* 
         return nullptr;
     }
 
-    // Si hay un disparo previo pendiente de evaluación y ya terminó su vuelo, evaluarlo
     evaluarUltimoDisparo(mem);
 
-    // 1. Percepción
     percepcion.percibir(k, host);
 
-    // 2. Razonamiento
     qreal v0 = 0.0;
     qreal thetaRad = 0.0;
     short tipoProyectil = PROY_RAPIDO_LIGERO;
@@ -31,7 +28,6 @@ Proyectil* AgenteAutonomo::ejecutarCiclo(Kirby* k, Entidad* host, MemoriaNivel* 
     ultimoTipoDisparo = razonamiento.getTipoDisparoSeleccionado();
     ultimoEstadoObjetivo = percepcion.getEstadoKirby();
 
-    // 3. Acción
     return accion.ejecutarDisparo(host, v0, thetaRad, tipoProyectil);
 }
 
@@ -41,13 +37,12 @@ void AgenteAutonomo::evaluarUltimoDisparo(MemoriaNivel* mem) {
         return;
     }
 
-    // 4. Aprendizaje (solo si el proyectil ya finalizó su trayectoria)
     percepcion.percibirResultado(p);
     if (percepcion.tieneResultado()) {
         aprendizaje.evaluarYRegistrar(percepcion, ultimoTipoDisparo,
                                       ultimoEstadoObjetivo, mem, &razonamiento);
         percepcion.limpiarResultado();
-        // Anular referencia no propietaria tras evaluar para evitar puntero colgante
+
         accion.limpiarReferenciaProyectil();
     }
 }
