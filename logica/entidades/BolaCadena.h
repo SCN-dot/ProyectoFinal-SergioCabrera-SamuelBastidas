@@ -6,10 +6,6 @@
 
 class Kirby;
 
-/**
- * @brief Bola con cadena giratoria usada por el Capitán de Rifles en el Nivel 2.
- * Describe una espiral de radio oscilante mediante MovCircular.
- */
 class BolaCadena : public Entidad {
 private:
     MovCircular modeloEspiral;
@@ -30,4 +26,4 @@ public:
     qreal getCentroY() const;
 };
 
-#endif // BOLACADENA_H
+#endif
