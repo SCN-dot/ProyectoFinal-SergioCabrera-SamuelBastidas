@@ -30,7 +30,6 @@ void Percepcion::percibir(const Kirby* k, const Entidad* oficial) {
     distanciaKirby = qAbs(ox - kx);
     objetivoALaIzquierda = (kx <= ox);
 
-    // En pantalla Y crece hacia abajo: deltaY positivo indica que Kirby está más arriba
     deltaY = oy - ky;
 }
 
@@ -40,7 +39,6 @@ void Percepcion::percibirResultado(const Proyectil* p) {
         return;
     }
 
-    // Si el proyectil aún está en vuelo, todavía no hay veredicto definitivo
     if (p->estaActiva()) {
         hayResultado = false;
         return;

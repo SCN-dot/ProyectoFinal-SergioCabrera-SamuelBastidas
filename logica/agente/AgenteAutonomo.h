@@ -11,10 +11,6 @@ class Entidad;
 class MemoriaNivel;
 class Proyectil;
 
-/**
- * @brief Coordinador del ciclo cognitivo de 4 fases del Oficial Patriota:
- * Percepción -> Razonamiento -> Acción -> Aprendizaje.
- */
 class AgenteAutonomo {
 private:
     Percepcion percepcion;
@@ -35,4 +31,4 @@ public:
     bool estaEnModoPreventivo() const;
 };
 
-#endif // AGENTEAUTONOMO_H
+#endif

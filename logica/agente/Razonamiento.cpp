@@ -24,7 +24,7 @@ qreal Razonamiento::calcularVelocidadBalistica(qreal d, qreal deltaY, qreal thet
     qreal denominador = 2.0 * cosTheta * cosTheta * terminoAltura;
 
     if (denominador <= 0.0) {
-        // Ángulo de respaldo más vertical si el objetivo está muy elevado
+
         qreal thetaRespaldo = qDegreesToRadians(78.0);
         qreal cosR = qCos(thetaRespaldo);
         qreal denR = 2.0 * cosR * cosR * (d * qTan(thetaRespaldo) - deltaY);
@@ -42,7 +42,6 @@ void Razonamiento::decidir(const Percepcion& percepcion, const MemoriaNivel* mem
     short estado = percepcion.getEstadoKirby();
     bool tendenciaEvasion = (memoria != nullptr) && memoria->hayTendenciaEvasion();
 
-    // Selección del proyectil especializado del Oficial Patriota según el estado de Kirby
     if (estado == ESTADO_ROCA) {
         tipoProyectilSeleccionado = PROY_PESADO_ROCA;
         tipoDisparoSeleccionado = TIRO_ELEVADO;
@@ -65,7 +64,7 @@ void Razonamiento::decidir(const Percepcion& percepcion, const MemoriaNivel* mem
     qreal deltaY = percepcion.getDeltaY();
 
     if (tipoProyectilSeleccionado == PROY_PESADO_ROCA) {
-        // Parábola lenta y elevada que da margen visual al jugador para reaccionar
+
         qreal anguloDirectoGrados = qRadiansToDegrees(qAtan2(deltaY, d));
         qreal anguloGrados = qMax(anguloAltoGrados + 9.0, anguloDirectoGrados + 10.0);
         if (anguloGrados < 58.0) anguloGrados = 58.0;
@@ -80,7 +79,6 @@ void Razonamiento::decidir(const Percepcion& percepcion, const MemoriaNivel* mem
         return;
     }
 
-    // PROY_RAPIDO_LIGERO: trayectoria más tensa y veloz apuntando a la altura actual o de vuelo
     if (tipoDisparoSeleccionado == TIRO_PREVENTIVO) {
         deltaY += 55.0;
     }
@@ -99,7 +97,6 @@ void Razonamiento::decidir(const Percepcion& percepcion, const MemoriaNivel* mem
         outV0 = 1200.0;
     }
 
-    // Si Kirby está a la izquierda del oficial, reflejar el ángulo horizontalmente
     outThetaRad = percepcion.estaALaIzquierda() ? (M_PI - thetaBaseRad) : thetaBaseRad;
 }
 

@@ -30,7 +30,6 @@ Proyectil* Accion::ejecutarDisparo(const Entidad* lanzador, qreal v0, qreal thet
         gravedad = Constantes::GRAVEDAD_BASE * Constantes::FACTOR_GRAVEDAD_PESADO;
     }
 
-    // La propiedad de este proyectil se transfiere inmediatamente a la lista del Nivel
     Proyectil* nuevo = new Proyectil(origenX, origenY, v0, theta,
                                      gravedad, danio, fuerzaImpacto, tipoProyectil);
     ultimoProyectil = nuevo;

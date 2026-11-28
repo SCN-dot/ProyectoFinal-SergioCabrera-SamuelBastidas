@@ -1,11 +1,6 @@
 #ifndef MEMORIANIVEL_H
 #define MEMORIANIVEL_H
 
-/**
- * @brief Memoria acumulativa persistente del agente inteligente entre oleadas.
- * Almacena aciertos y fallos en arreglos dinámicos crudos de tamaño 3x4 = 12.
- * Índice = tipoDisparo * 4 + estadoKirby.
- */
 class MemoriaNivel {
 private:
     short* aciertos;
@@ -19,7 +14,6 @@ public:
     MemoriaNivel();
     ~MemoriaNivel();
 
-    // Se prohíbe la copia para garantizar la propiedad exclusiva de los arreglos dinámicos
     MemoriaNivel(const MemoriaNivel&) = delete;
     MemoriaNivel& operator=(const MemoriaNivel&) = delete;
 
@@ -36,4 +30,4 @@ public:
     void reiniciar();
 };
 
-#endif // MEMORIANIVEL_H
+#endif

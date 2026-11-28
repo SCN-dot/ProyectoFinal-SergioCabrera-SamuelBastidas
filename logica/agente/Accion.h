@@ -7,11 +7,6 @@
 class Entidad;
 class Proyectil;
 
-/**
- * @brief Fase 3 del Agente Inteligente: Acción.
- * Materializa la decisión instanciando el Proyectil en memoria dinámica
- * y mantiene una referencia no propietaria para su evaluación posterior.
- */
 class Accion {
 private:
     Proyectil* ultimoProyectil;
@@ -25,4 +20,4 @@ public:
     void limpiarReferenciaProyectil();
 };
 
-#endif // ACCION_H
+#endif

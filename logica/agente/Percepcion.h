@@ -7,11 +7,6 @@ class Kirby;
 class Entidad;
 class Proyectil;
 
-/**
- * @brief Fase 1 del Agente Inteligente: Percepción.
- * Extrae datos sensoriales del entorno (estado de Kirby, distancia, altura)
- * y evalúa el resultado del último proyectil sin tomar decisiones.
- */
 class Percepcion {
 private:
     short estadoKirby;
@@ -38,4 +33,4 @@ public:
     bool getUltimoAcerto() const;
 };
 
-#endif // PERCEPCION_H
+#endif
